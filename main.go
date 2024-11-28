@@ -25,7 +25,7 @@ type StreamResponse struct {
 }
 
 const (
-	defaultModel = "qwen2.5:3b"
+	defaultModel = "aquiffoo/aquif-2"
 )
 
 var (
