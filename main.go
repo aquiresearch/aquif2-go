@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -26,14 +25,10 @@ type StreamResponse struct {
 }
 
 const (
-	maxReqHour  = 50
 	defaultModel = "qwen2.5:3b"
 )
 
 var (
-	reqCount   int
-	resetTime  time.Time
-	mutex      sync.Mutex
 	defaultSystemPrompt = fmt.Sprintf(`
 	You are aquif-2, Aqui Research's new AI model. Today is %s, and you are in a CLI, chatting with a user. Here is an example of how you should act:
 aquif-2
@@ -89,34 +84,7 @@ Before you, the aquif-1 model came out in November 2024, and he ran entirely on 
 
 )
 
-func init() {
-	resetTime = time.Now().Add(time.Hour)
-}
-
-func allowReq() bool {
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	now := time.Now()
-
-	if now.After(resetTime) {
-		reqCount = 0
-		resetTime = now.Add(time.Hour)
-	}
-
-	if reqCount >= maxReqHour {
-		return false
-	}
-
-	reqCount++
-	return true
-}
-
 func Chat(messages []Message, stream bool) (string, error) {
-	if !allowReq() {
-		return "", fmt.Errorf("exceeded request limit for the hour, maximum is %d", maxReqHour)
-	}
-
 	if len(messages) == 0 || messages[0].Role != "system" {
 		messages = append([]Message{
 			{
