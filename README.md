@@ -12,7 +12,7 @@ Once you have Ollama running, you can run the model by executing the following c
 go run main.go
 ```
 
-This will make aquif-2 answer the question in the `prompt` variable declared on line 186.
+This will make aquif-2 answer the question in the `prompt` variable declared on line 154.
 
 ## Contributing
 
